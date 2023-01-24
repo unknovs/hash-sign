@@ -22,7 +22,6 @@ type hashSignature struct {
 
 var (
 	certFile   = os.Getenv("PEM_FILE")
-	privateKey *rsa.PrivateKey
 )
 
 func main() {

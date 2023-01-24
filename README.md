@@ -13,7 +13,7 @@ For signing hash with RSA keys using SHA256 algorithm
 
 ```
     environment:
-      PFX_FILE: "/run/secrets/key.pem"
+      PEM_FILE: "/run/secrets/key.pem"
     secrets:
       - source: "private_key"
         target: "key.pem"
