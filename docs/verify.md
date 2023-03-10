@@ -6,7 +6,7 @@ Method for verifying signed data.
 
 ## **Authorization**
 
-If "API_KEY" variable is set in environment, `API-Key` shall be used in header
+If "API_KEY" variable is set in environment, `API-Key` header shall be used in header
 
 ```
 header 'API-Key: Strong_example'

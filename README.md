@@ -24,12 +24,15 @@ POST `/verify` For verification of signed hash using public certificate
 ```
     environment:
       PEM_FILE: "/run/secrets/key.pem"
+      API_KEY: "Put_your_api_key_here"
     secrets:
       - source: "private_key"
         target: "key.pem"
 ```
 
 `PEM_FILE` unencrypted RSA signing key in PEM format. 
+
+`API_KEY` Api key. Optional. If set, `API-Key` header shall be used in header.
 
 ### Secret creation from server terminal (SSH with root privileges)
 
