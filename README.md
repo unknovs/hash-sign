@@ -43,10 +43,10 @@ docker secret create private_key /path/to/file/key.pem
 
 ## Methods
 
-`/sign` method description [here](https://github.com/unknovs/hash-sign/blob/main/docs/sign.md)
+`/sign` method description [here](./docs/sign.md)
 
-`/verify` method description [here](https://github.com/unknovs/hash-sign/blob/main/docs/sign.md)
+`/verify` method description [here](./docs/verify.md)
 
 ## Useful commands
 
-You can find some useful commands for preparing key [here](https://github.com/unknovs/hash-sign/blob/main/docs/helper.md)
+You can find some useful commands for preparing key [here](./docs/helper.md)
