@@ -4,6 +4,14 @@
 
 Method for signing hash.
 
+## **Authorization**
+
+If "API_KEY" variable is set in environment, `API-Key` header shall be used in header
+
+```
+header 'API-Key: Strong_example'
+```
+
 ## **Request**
 
 The Service provider's application sends the following request using TLS:
