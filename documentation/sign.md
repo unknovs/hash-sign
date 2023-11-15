@@ -17,7 +17,7 @@ header 'API-Key: Strong_example'
 The Service provider's application sends the following request using TLS:
 
 ```
-POST /sign
+POST /digest/sign
 ```
 
 ### **Body**

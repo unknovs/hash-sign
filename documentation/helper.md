@@ -5,7 +5,7 @@
 Converting pfx to pem:
 
 ```
-openssl pkcs12 -in your.pfx" -out your.pem -nodes
+openssl pkcs12 -in your.pfx -out your.pem -nodes
 ```
 
 To extract the private key form a PFX to a PEM file use this command:
