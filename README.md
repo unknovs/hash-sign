@@ -1,8 +1,16 @@
 # Simple API for working with RSA signatures
 
-POST `/sign` For signing hash with RSA keys using SHA256 algorithm
+POST `/digest/sign` For signing hash with RSA keys using SHA256 algorithm
 
-POST `/verify` For verification of signed hash using public certificate
+POST `/digest/verify` For verification of signed hash using public certificate
+
+GET `/digest/calculateSummary/` For digests summary calculation for one signature for use in Entrust TrustedX eIDAS Platform
+
+GET `/certificates` For receiving a signing and authentication certificates stored in environment variables
+
+POST `/asice/addFile` For adding a file to a asic-e container
+
+POST `/encrypt/publicKey` For data encryption (RSA PKCS1Padding) using a PKCS1 RSA public key in PEM format.
 
 ## Signing 
 
@@ -25,14 +33,27 @@ POST `/verify` For verification of signed hash using public certificate
     environment:
       PEM_FILE: "/run/secrets/key.pem"
       API_KEY: "Put_your_api_key_here"
+      SIGN_CERT: "base64 encoded signing certificate"
+      AUTH_CERT: "base64 encoded authentication certificate"
     secrets:
       - source: "private_key"
         target: "key.pem"
+    volumes:
+      - temp:/tmp
+volumes:
+  temp:
+secrets:
+  private_key_prod:
+    external: true    
 ```
 
 `PEM_FILE` unencrypted RSA signing key in PEM format. 
 
 `API_KEY` Api key. Optional. If set, `API-Key` header shall be used in header.
+
+`SIGN_CERT` base64 encoded signing certificate
+
+`AUTH_CERT` base64 encoded authentication certificate
 
 ### Secret creation from server terminal (SSH with root privileges)
 
@@ -43,13 +64,25 @@ Log into server with ssh and administrator privileges. Copy key file to server. 
 ```sh
 docker secret create private_key /path/to/file/key.pem
 ```
+### Secret creation from Portainer
+
+When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVATE KEY-----` and end with `-----END PRIVATE KEY-----` to a secret.
+
 
 ## Methods
 
-`/sign` method description [here](./docs/sign.md)
+`/digest/sign` method description [here](./documentation/sign.md)
 
-`/verify` method description [here](./docs/verify.md)
+`/digest/verify` method description [here](./documentation/verify.md)
+
+`/digest/calculateSummary/` method description [here](./documentation/calculateSummary.md)
+
+`/certificates` method description [here](./documentation/certificates.md)
+
+`/asice/addFile` method description [here](./documentation/addFile.md)
+
+`/encrypt/publicKey` method description [here](./documentation/encrypt_with_public_key.md)
 
 ## Useful commands
 
-You can find some useful commands for preparing key [here](./docs/helper.md)
+You can find some useful commands for preparing key [here](./documentation/helper.md)

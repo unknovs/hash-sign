@@ -1,0 +1,5 @@
+*.pem
+dockerfile-local
+docker-compose.yml
+.env
+.gitignore

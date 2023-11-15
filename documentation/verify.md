@@ -17,7 +17,7 @@ header 'API-Key: Strong_example'
 The Service provider's application sends the following request using TLS:
 
 ```
-POST /verify
+POST /digest/verify
 ```
 
 ### **Body**
@@ -46,7 +46,7 @@ Description of properties
 {
     "digestValue": "zH/19ZUeiZrDlFbnTunPt3pOpkYeF/KS8OjmJWDoaTg=",
     "signatureValue": "H/rUJkDf3eLykp+GIv...l8gXn6eSbxll69rlYc6Fg==",
-    "certificate": "MIIG6jCCBNKgAwIBAgIQ...your_public_certificate_base64_here...Diy2LEz27hQF+ovLEsOQX0uGhnsWJNsrt6b5YuvriU10TRHc9DiVav4BFQkh7OO3dN9PZyabTTbNo6tUAim8j+2aew=="
+    "certificate": "MIIG6jCCBNKgAwIBAgIQ...your_public_certificate_base64_here...Diyj+2aew=="
 }
 ```
 

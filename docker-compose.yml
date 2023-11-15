@@ -1,0 +1,15 @@
+---
+version: '3.5'
+services:
+  hash-sign:
+    image: unknovs/hash-sign:latest
+    environment:
+      - PEM_FILE=tmp/test_key.pem
+      - API_KEY=12345
+    volumes:
+      - ./test-data:/tmp
+    ports:
+      - 80:80
+volumes:
+  hash:
+  temp:

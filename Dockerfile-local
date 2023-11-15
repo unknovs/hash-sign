@@ -1,0 +1,26 @@
+FROM golang:1.21-alpine AS build
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+
+RUN apk --no-cache add git ca-certificates tzdata && \ 
+    go mod download && \
+    go generate ./...
+
+COPY . ./
+
+RUN go build -ldflags="-w -s" -tags 'netgo osusergo' -o publish/server . 
+# && \
+RUN    mkdir -p publish/etc/ssl/certs/ && \
+    mkdir -p publish/usr/share/zoneinfo/ && \
+    mkdir -p publish/certs/ && \
+    cp /etc/ssl/certs/ca-certificates.crt publish/etc/ssl/certs/ && \
+    cp -R /usr/share/zoneinfo publish/usr/share/
+
+FROM scratch
+WORKDIR /
+COPY --from=build app/publish/ ./
+EXPOSE 80/tcp
+ENV TZ=Europe/Riga
+ENTRYPOINT ["/server", "main"]

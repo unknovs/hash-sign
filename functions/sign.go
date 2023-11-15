@@ -53,22 +53,15 @@ func GetPrivateKey(filename string) (*rsa.PrivateKey, error) {
 		return nil, fmt.Errorf("failed to parse pem file: %w", err)
 	}
 
-	fmt.Println("Private Key loaded and ready to work!!!")
-
 	return privateKey, nil
 }
 
 func SigningHandler(privateKey *rsa.PrivateKey) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Limit to POST only
-		if r.Method != http.MethodPost {
-			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-			return
-		}
 
-		// Check API key
-		if !checkAPIKey(r) {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		if !isPostMethod(r) {
+			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 			return
 		}
 
@@ -79,7 +72,7 @@ func SigningHandler(privateKey *rsa.PrivateKey) http.HandlerFunc {
 		}
 
 		var hashSignatureValue responses.HashSignature
-		
+
 		// Decode the incoming JSON
 		err := json.NewDecoder(r.Body).Decode(&hashSignatureValue)
 		if err != nil {
@@ -103,7 +96,7 @@ func SigningHandler(privateKey *rsa.PrivateKey) http.HandlerFunc {
 		hashSignatureValue.Hash = base64.StdEncoding.EncodeToString(hashBytes)
 
 		// Log the signed hash value
-		fmt.Println("Hash value: ", hashSignatureValue.Hash, " processed")
+		log.Printf("Hash value: %v signed", hashSignatureValue.Hash)
 
 		// Write the JSON response
 		w.Header().Set("Content-Type", "application/json")
