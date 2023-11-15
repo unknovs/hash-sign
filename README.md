@@ -12,6 +12,10 @@ POST `/asice/addFile` For adding a file to a asic-e container
 
 POST `/encrypt/publicKey` For data encryption (RSA PKCS1Padding) using a PKCS1 RSA public key in PEM format.
 
+## Image
+
+Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sign)
+
 ## Signing 
 
 * Application decodes received base64 hash to binary format
