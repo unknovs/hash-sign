@@ -1,0 +1,40 @@
+name: Build, push & scan image
+
+on:
+  push:
+    branches:
+       - actions
+
+
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Install golangci-lint
+        run: |
+          curl -sSfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.50.1
+          golangci-lint --version
+
+      - name: Run golangci-lint
+        run: |
+          golangci-lint run 
+            --timeout 3m 
+            --out-format=checkstyle:golangci-lint.out,colored-line-number   
+
+      - name: Print linting results
+        run: cat golangci-lint.out
+
+      - name: Upload linting results
+        uses: actions/upload-artifact@v2
+        with:
+          name: golangci-lint-results
+          path: golangci-lint.out
