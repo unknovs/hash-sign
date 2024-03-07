@@ -21,14 +21,14 @@ func GetPrivateKey(filename string) (*rsa.PrivateKey, error) {
 
 	//Lets check, if PEM file is added to env
 	if filename == "" {
-		log.Println("Private key is not loaded.")
+		log.Println("RSA Private key is not loaded.")
 		return nil, nil
 	}
 
 	// Read the pem file
 	certData, err := os.Open(filename)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read pem file: %w", err)
+		return nil, fmt.Errorf("failed to read RSA pem file: %w", err)
 	}
 	defer certData.Close()
 
@@ -39,18 +39,18 @@ func GetPrivateKey(filename string) (*rsa.PrivateKey, error) {
 	buffer := bufio.NewReader(certData)
 	_, err = buffer.Read(pembytes)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read pem file: %w", err)
+		return nil, fmt.Errorf("failed to read RSA pem file: %w", err)
 	}
 
 	block, _ := pem.Decode([]byte(pembytes))
 	if block == nil {
-		return nil, fmt.Errorf("failed to decode pem file")
+		return nil, fmt.Errorf("failed to decode RSA pem file")
 	}
 
 	// Extract the private key from the pem file
 	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse pem file: %w", err)
+		return nil, fmt.Errorf("failed to parse RSA pem file: %w", err)
 	}
 
 	return privateKey, nil
@@ -67,7 +67,7 @@ func SigningHandler(privateKey *rsa.PrivateKey) http.HandlerFunc {
 
 		// Check if the private key is loaded
 		if privateKey == nil {
-			http.Error(w, "Private key not loaded", http.StatusNotFound)
+			http.Error(w, "RSA Private key not loaded", http.StatusNotFound)
 			return
 		}
 

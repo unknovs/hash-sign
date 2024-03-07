@@ -18,3 +18,5 @@
 pipeline.yml
 main_test.go
 test-data
+tmp
+docker-compose.yml

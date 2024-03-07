@@ -14,10 +14,16 @@ header 'API-Key: Strong_example'
 
 ## **Request**
 
-The Service provider's application sends the following request using TLS:
+The Service provider's application sends the following request using TLS for RSA keys:
 
 ```
 POST /digest/sign
+```
+
+uzsing ECDSA key:
+
+```
+POST /digest/sign-ecc
 ```
 
 ### **Body**
