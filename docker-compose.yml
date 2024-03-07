@@ -2,12 +2,15 @@
 version: '3.5'
 services:
   hash-sign:
-    image: unknovs/hash-sign:latest
+    # image: unknovs/hash-sign:latest
+    image: ad4325aa4113
     environment:
-      - PEM_FILE=tmp/test_key.pem
-      - API_KEY=12345
+      - PEM_FILE=keys/rsa_test_key.pem
+      - EC_PEM_FILE=keys/ecc_test_key.pem
+      - API_KEY=Example12345
     volumes:
-      - ./test-data:/tmp
+      - ./test-data:/keys
+      - ./tmp:/tmp
     ports:
       - 80:80
 volumes:

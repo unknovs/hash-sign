@@ -1,6 +1,8 @@
-# Simple API for working with RSA signatures
+# Simple API for working with signatures
 
 POST `/digest/sign` For signing hash with RSA keys using SHA256 algorithm
+
+POST `/digest/sign-ecc` For signing hash with ECC keys
 
 POST `/digest/verify` For verification of signed hash using public certificate
 
@@ -75,7 +77,7 @@ When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVA
 
 ## Methods
 
-`/digest/sign` method description [here](./documentation/sign.md)
+`/digest/sign` and `/digest/sign-ecc` method description [here](./documentation/sign.md)
 
 `/digest/verify` method description [here](./documentation/verify.md)
 
