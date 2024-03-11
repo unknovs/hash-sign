@@ -21,7 +21,7 @@ Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sig
 ## Signing 
 
 * Application decodes received base64 hash to binary format
-* Signs with RSA SHA256 
+* Signs with RSA and ECC 
 * Encodes signed value to base64
 * Returns base64 signed value.
 
@@ -39,8 +39,11 @@ Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sig
     environment:
       PEM_FILE: "/run/secrets/key.pem"
       API_KEY: "Put_your_api_key_here"
-      SIGN_CERT: "base64 encoded signing certificate"
-      AUTH_CERT: "base64 encoded authentication certificate"
+      RSA_AUTH_CERT: "base64 encoded RSA signing certificate"
+      RSA_SIGN_CERT: "base64 encoded RSA authentication certificate"
+      ECDSA_AUTH_CERT: "base64 encoded ECDSA signing certificate"
+      ECDSA_SIGN_CERT: "base64 encoded ECDSA authentication certificate"
+
     secrets:
       - source: "private_key"
         target: "key.pem"
@@ -57,9 +60,14 @@ secrets:
 
 `API_KEY` Api key. Optional. If set, `API-Key` header shall be used in header.
 
-`SIGN_CERT` base64 encoded signing certificate
+`RSA_AUTH_CERT` base64 encoded RSA authentication certificate. Value between the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` shall be provided. 
 
-`AUTH_CERT` base64 encoded authentication certificate
+`RSA_SIGN_CERT` base64 encoded RSA signing certificate. Value between the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` shall be provided.
+
+`ECDSA_AUTH_CERT` base64 encoded ECDSA authentication certificate. Value between the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` shall be provided.
+
+`ECDSA_SIGN_CERT` base64 encoded ECDSA signing certificate. Value between the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` shall be provided.
+
 
 ### Secret creation from server terminal (SSH with root privileges)
 

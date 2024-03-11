@@ -3,3 +3,4 @@ dockerfile-local
 docker-compose.yml
 .env
 .gitignore
+tmp/*
