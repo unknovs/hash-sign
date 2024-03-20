@@ -45,12 +45,12 @@ func CheckCertificates() error {
 		switch name {
 		case "RsaAuthCert", "RsaSigningCert":
 			if _, ok := certificate.PublicKey.(*rsa.PublicKey); !ok {
-				return fmt.Errorf("Provided %s is not an ECDSA public key", name)
+				return fmt.Errorf("provided %s is not an RSA public key", name)
 			}
 
 		case "EcdsaAuthCert", "EcdsaSigningCert":
 			if _, ok := certificate.PublicKey.(*ecdsa.PublicKey); !ok {
-				return fmt.Errorf("Provided %s is not an ECDSA public key", name)
+				return fmt.Errorf("provided %s is not an ECDSA public key", name)
 			}
 
 		}

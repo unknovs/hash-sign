@@ -20,4 +20,4 @@ main_test.go
 test-data
 tmp/*
 tmp
-.docker-compose.yml
+dc-test.yml

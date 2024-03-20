@@ -23,8 +23,17 @@ POST /digest/sign
 uzsing ECDSA key:
 
 ```
-POST /digest/sign-ecc
+POST /digest/sign-ecc?SignatureMethod=P1364
 ```
+
+## sign-ecc keys
+
+Since with ECDSA ypu can create diferent signatures, DER and P1363 signatures are implemented and fo choose signatureMethot, a key `SignatureMethod` with values `DER`  or `P1363` are implemented. 
+
+|**Key**|**Type**|**Description**|
+| --- | --- | --- |
+| `SignatureMethod` | *string* | Use `DER`  or `P1363` signing methods. if no key, `DER`  is default. |
+
 
 ### **Body**
 
@@ -54,6 +63,7 @@ JSON object:
 
 ```json
 {
+    "signatureMethod": "string",
     "hash": "string",
     "signatureValue": "string"
 }
@@ -63,6 +73,7 @@ Description of properties
 
 |**Property**|**Type**|**Description**|
 | --- | --- | --- |
+| `signatureMethod`  | *string* | Signature method used to sign|
 | `hash`  | *string* | hash requested to be signed in base64 format|
 | `signatureValue` | *string* | Signature value in base64 format |
 
@@ -70,6 +81,7 @@ Description of properties
 
 ```json
 {
+    "signatureMethod": "P1363",
     "hash": "27aAZIjttlrjGyLMlcMcQh+nsltyVNLpxdog=",
     "signatureValue": "iyQGs/5hdq+....V/YsjOVA=="
 }
