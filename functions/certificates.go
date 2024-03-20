@@ -5,48 +5,48 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/unknovs/hash-sign/env"
-	"github.com/unknovs/hash-sign/routes/responses"
 )
 
+const logMessage = "%s?key=%s&type=%s responded"
+
+func writeError(w http.ResponseWriter, status int, message string) {
+	w.WriteHeader(status)
+	fmt.Fprintf(w, `{"error": "%s"}`, message)
+}
+
 func HandleCertificatesRequest(w http.ResponseWriter, r *http.Request) {
-	var response responses.CertificatesResponse
-	var err error
+	query := r.URL.Query()
+	key := query.Get("key")
+	certType := query.Get("type")
 
 	if !isGetMethod(r) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	if env.AuthCert == "" && env.SigningCert == "" {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "No certificates found in environment")
+	if !certificatesExist() {
+		writeError(w, http.StatusNotFound, "No certificates found in environment")
 		return
 	}
 
-	if certType := r.URL.Query().Get("type"); certType == "auth" {
-		response.AuthenticationCertificate = env.AuthCert
-		log.Printf("%s?type=%s responded", r.URL.Path, certType)
-	} else if certType == "sign" {
-		response.SigningCertificate = env.SigningCert
-		log.Printf("%s?type=%s responded", r.URL.Path, certType)
-	} else if certType != "" {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "Type used not allowed")
+	response, err := getCertificatesResponse(key, certType, r)
+	if err != nil {
+		writeError(w, http.StatusNotFound, err.Error())
 		return
-	} else {
-		response.AuthenticationCertificate = env.AuthCert
-		response.SigningCertificate = env.SigningCert
-		log.Printf("%s responded", r.URL.Path)
 	}
 
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(response)
+	jsonBytes, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Error encoding response: %v", err)
+		fmt.Fprintf(w, "Error marshaling JSON: %v", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(jsonBytes)
+	if err != nil {
+		log.Printf("Error writing JSON response: %v", err)
 	}
 }

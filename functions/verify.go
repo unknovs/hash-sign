@@ -2,108 +2,107 @@ package functions
 
 import (
 	"crypto"
+	"crypto/ecdsa"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/asn1"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"math/big"
 	"net/http"
 
-	"github.com/unknovs/hash-sign/env"
 	"github.com/unknovs/hash-sign/routes/requests"
 )
 
-func VerifyHandler(privateKey *rsa.PrivateKey) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Limit to POST only
-		if !isPostMethod(r) {
-			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-			return
-		}
-		// Parse request body
-		verifyBody, err := parseVerifyBody(r)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		// Verify signature
-		err = verifySignature(verifyBody, privateKey)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+func parseCertificate(certificateStr string) (*x509.Certificate, error) {
+	certificateBytes, err := base64.StdEncoding.DecodeString(certificateStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid certificate: %v", err)
+	}
 
-		log.Printf("Signature in signatureValue is valid!")
-
-		// If signature is validated, respond with this message
-		message := "Signature is valid!"
-		fmt.Fprintln(w, message)
-	}
-}
-
-func parseVerifyBody(r *http.Request) (*requests.VerifyBody, error) {
-	var verifyBody requests.VerifyBody
-	err := json.NewDecoder(r.Body).Decode(&verifyBody)
-	if err != nil {
-		return nil, err
-	}
-	return &verifyBody, nil
-}
-
-func verifySignature(verifyBody *requests.VerifyBody, privateKey *rsa.PrivateKey) error {
-	// Decode base64 certificate
-	certificateBytes, err := base64.StdEncoding.DecodeString(verifyBody.Certificate)
-	if err != nil {
-		return errors.New("invalid certificate")
-	}
-	// Parse certificate
-	certificate, err := parseCertificate(certificateBytes)
-	if err != nil {
-		return err
-	}
-	// Get public key from certificate
-	publicKey, ok := certificate.PublicKey.(*rsa.PublicKey)
-	if !ok {
-		return errors.New("invalid public key")
-	}
-	// Decode received base64 signatureValue
-	signatureBytes, err := base64.StdEncoding.DecodeString(verifyBody.SignatureValue)
-	if err != nil {
-		return errors.New("invalid signature value")
-	}
-	// Decode received base64 digestValue
-	digestValue, err := base64.StdEncoding.DecodeString(verifyBody.DigestValue)
-	if err != nil {
-		return errors.New("invalid digest value")
-	}
-	// Verify signature using PKCS1v15
-	err = rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, digestValue, signatureBytes)
-	if err != nil {
-		return errors.New("failed to verify signature")
-	}
-	return nil
-}
-
-func parseCertificate(certificateBytes []byte) (*x509.Certificate, error) {
 	certificate, err := x509.ParseCertificate(certificateBytes)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse certificate: %v", err)
 	}
 
-	// Check that the public key algorithm is RSA
-	if _, ok := certificate.PublicKey.(*rsa.PublicKey); !ok {
-		return nil, fmt.Errorf("invalid public key algorithm: %T", certificate.PublicKey)
-	}
-
 	return certificate, nil
 }
 
-func VerifyHandlerWrapper(w http.ResponseWriter, r *http.Request) {
-	privateKey, err := GetPrivateKey(env.PemFile)
+func decodeBase64(s string) ([]byte, error) {
+	bytes, err := base64.StdEncoding.DecodeString(s)
 	if err != nil {
-		http.Error(w, "Failed to get private key", http.StatusBadRequest)
+		return nil, fmt.Errorf("failed to decode base64 string: %v", err)
 	}
-	VerifyHandler(privateKey)(w, r)
+
+	return bytes, nil
+}
+
+func verifyECDSASignature(pub *ecdsa.PublicKey, digestValue, signatureBytes []byte) error {
+	var esig struct {
+		R, S *big.Int
+	}
+	_, errAsn1 := asn1.Unmarshal(signatureBytes, &esig)
+	if errAsn1 == nil {
+		if !ecdsa.Verify(pub, digestValue, esig.R, esig.S) {
+			return errors.New("ECDSA verification failed")
+		}
+	} else {
+		keyBytes := (pub.Params().BitSize + 7) >> 3
+		if len(signatureBytes) != 2*keyBytes {
+			return errors.New("invalid ECDSA signature length")
+		}
+		r := new(big.Int).SetBytes(signatureBytes[:keyBytes])
+		s := new(big.Int).SetBytes(signatureBytes[keyBytes:])
+		if !ecdsa.Verify(pub, digestValue, r, s) {
+			return errors.New("ECDSA verification failed")
+		}
+	}
+
+	return nil
+}
+
+func VerifySignature(w http.ResponseWriter, r *http.Request) {
+	var verifyBody requests.VerifyBody
+	err := json.NewDecoder(r.Body).Decode(&verifyBody)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to parse request body: %v", err), http.StatusUnprocessableEntity)
+		return
+	}
+
+	certificate, err := parseCertificate(verifyBody.Certificate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	signatureBytes, err := decodeBase64(verifyBody.SignatureValue)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid signature value: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	digestValue, err := decodeBase64(verifyBody.DigestValue)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid digest value: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	switch pub := certificate.PublicKey.(type) {
+	case *rsa.PublicKey:
+		err = rsa.VerifyPKCS1v15(pub, crypto.SHA256, digestValue, signatureBytes)
+	case *ecdsa.PublicKey:
+		err = verifyECDSASignature(pub, digestValue, signatureBytes)
+	default:
+		http.Error(w, fmt.Sprintf("Unsupported public key type: %T", certificate.PublicKey), http.StatusBadRequest)
+		return
+	}
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to verify signature: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprintln(w, "Signature is valid!")
 }

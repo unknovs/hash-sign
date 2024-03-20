@@ -89,6 +89,7 @@ func SigningHandler(privateKey *rsa.PrivateKey) http.HandlerFunc {
 			http.Error(w, "Error signing hash", http.StatusInternalServerError)
 			return
 		}
+		hashSignatureValue.SignatureMethod = "PKCS1v15"
 
 		// Encode the signature to base64
 		signatureValue := base64.StdEncoding.EncodeToString(signature)

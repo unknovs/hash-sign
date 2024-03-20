@@ -11,6 +11,12 @@ import (
 
 func main() {
 
+	// Check if certificates exist and are valid
+	err := functions.CheckCertificates()
+	if err != nil {
+		log.Printf("Failed to validate certificates: %s", err)
+	}
+
 	// Check if API key is set and shall be used
 	if env.ApiKey == "" {
 		log.Println("API key not set in environment. Continuing without API key")
@@ -39,7 +45,7 @@ func main() {
 	// Router
 	http.HandleFunc("/digest/sign", functions.APIKeyAuthorization(functions.SigningHandler(privateKey)))
 	http.HandleFunc("/digest/sign-ecc", functions.APIKeyAuthorization(functions.SigningHandlerEC(privateKeyEC)))
-	http.HandleFunc("/digest/verify", functions.APIKeyAuthorization(functions.VerifyHandlerWrapper))
+	http.HandleFunc("/digest/verify", functions.APIKeyAuthorization(functions.VerifySignature))
 	http.HandleFunc("/digest/calculateSummary/", functions.APIKeyAuthorization(functions.HandleDigest))
 	http.HandleFunc("/certificates", functions.APIKeyAuthorization(functions.HandleCertificatesRequest))
 	http.HandleFunc("/asice/addFile", functions.APIKeyAuthorization(functions.HandleAddFileToAsiceRequest))
