@@ -46,7 +46,7 @@ func main() {
 	http.HandleFunc("/digest/sign", functions.APIKeyAuthorization(functions.SigningHandler(privateKey)))
 	http.HandleFunc("/digest/sign-ecc", functions.APIKeyAuthorization(functions.SigningHandlerEC(privateKeyEC)))
 	http.HandleFunc("/digest/verify", functions.APIKeyAuthorization(functions.VerifySignature))
-	http.HandleFunc("/digest/calculateSummary/", functions.APIKeyAuthorization(functions.HandleDigest))
+	http.HandleFunc("/digest/calculateSummary", functions.APIKeyAuthorization(functions.HandleDigest))
 	http.HandleFunc("/certificates", functions.APIKeyAuthorization(functions.HandleCertificatesRequest))
 	http.HandleFunc("/asice/addFile", functions.APIKeyAuthorization(functions.HandleAddFileToAsiceRequest))
 	http.HandleFunc("/encrypt/publicKey", functions.APIKeyAuthorization(functions.EncryptWithPublicKeyHandler))

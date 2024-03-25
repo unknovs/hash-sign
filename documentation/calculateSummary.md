@@ -17,7 +17,7 @@ header 'API-Key: Strong_example'
 The Service provider's application sends the following request using TLS:
 
 ```
-GET /digest/calculateSummary/{digest-in-base64}
+POST /digest/calculateSummary
 ```
 
 ### Querry
@@ -30,18 +30,35 @@ Possible keys (Optional), if no keys defined, all registrated certifikates will 
 
 *NOTE: If no key is used, by default its set to `sha256`*
 
+### Body
+
+JSON
+```json
+{
+    "digest": "string"
+}
+```
+
 ### **Example**
 
 without using a key:
 
 ```sh
-GET {host}/digest/calculateSummary/27aAZIjttlrBYu0hDHjGyLMlcMcQh+nsltyVNLpxdog=
+GET {host}/digest/calculateSummary
 ```
 
 using a `?hash=sha384` key:
 
 ```sh
-GET {host}/digest/calculateSummary/27aAZIjttlrBYu0hDHjGyLMlcMcQh+nsltyVNLpxdog=?hash=sha384
+GET {host}/digest/calculateSummary?hash=sha384
+```
+
+body
+
+```json
+{
+    "digest":"nofaW3trG2Q2OlnJZKLd620pCMjVOKezDoBveEAojA5W7yKjMyJv6fBA634hT2ns"
+}
 ```
 
 
@@ -52,6 +69,7 @@ JSON object:
 ```json
 {
     "digestSummary": "string",
+    "URLSafeDigestSummary": "string",
     "algorithm": "string"
 }
 ```
@@ -60,15 +78,17 @@ Description of properties
 
 |**Property**|**Type**|**Description**|
 | --- | --- | --- |
-| `digestSummary` | *string* | calculated digest summary value in base64 format for use in Entrust TrustedX eIDAS Platform |
-| `algorithm` | *string* | algorithm used to calculate digest summary value in base64 format for use in Entrust TrustedX eIDAS Platform |
+| `digestSummary` | *string* | calculated digest summary value in base64 format |
+| `URLSafeDigestSummary` | *string* | calculated digest summary value in URL safe base64 format for use in Entrust TrustedX eIDAS Platform |
+| `algorithm` | *string* | algorithm used to calculate digest summary value in base64 format |
 
 
 ### **Example** 
 
 ```json
 {
-    "digestSummary": "6N5NR4zjElA...kwn9QcV2Q=",
-    "algorithm": "sha512"
+    "digestSummary": "JWAUVjnwS3+xV0HS.....abRUiP3eWvr4S2",
+    "URLSafeDigestSummary": "JWAUVjnwS3-xV0HS.....abRUiP3eWvr4S2",
+    "algorithmUsed": "sha384"
 }
 ```
