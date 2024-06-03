@@ -30,7 +30,13 @@ func HandleDigest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the digest from the request
-	digest := req.DigestToSign
+	digest := req.DigestToCalculate
+
+	if req.DigestToCalculate == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Error: Digest not provided")
+		return
+	}
 
 	// Parse the query parameters
 	query := r.URL.Query()

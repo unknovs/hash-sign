@@ -1,5 +1,5 @@
 package requests
 
 type DigestSummaryRequest struct {
-	DigestToSign string `json:"digest"`
+	DigestToCalculate string `json:"digest"`
 }
