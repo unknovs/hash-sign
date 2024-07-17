@@ -9,12 +9,32 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/unknovs/hash-sign/routes/requests"
 	"github.com/unknovs/hash-sign/routes/responses"
 )
 
 func HandleDigest(w http.ResponseWriter, r *http.Request) {
-	if !isGetMethod(r) {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+
+	if !isPostMethod(r) {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse the JSON request body
+	var req requests.DigestSummaryRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Error decoding JSON request body: %v", err)
+		return
+	}
+
+	// Get the digest from the request
+	digest := req.DigestToCalculate
+
+	if req.DigestToCalculate == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Error: Digest not provided")
 		return
 	}
 
@@ -29,14 +49,15 @@ func HandleDigest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	digest := r.URL.Path[len("/digest/calculateSummary/"):]
-
 	// Base64 to binary
 	binaryDigest, err := base64.StdEncoding.DecodeString(digest)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Error decoding base64 digest: %v", err)
-		return
+		binaryDigest, err = base64.URLEncoding.DecodeString(digest)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Error decoding base64 digest: %v", err)
+			return
+		}
 	}
 
 	// Hash binary digest with selected algorithm
@@ -59,10 +80,12 @@ func HandleDigest(w http.ResponseWriter, r *http.Request) {
 
 	// Hex to base64
 	digestSummary := base64.StdEncoding.EncodeToString(hashedDigest)
+	URLSafeDigestSummary := base64.URLEncoding.EncodeToString(hashedDigest)
 
 	response := responses.DigestSummary{
-		DigestSummary: digestSummary,
-		Algorithm:     algorithm,
+		DigestSummary:  digestSummary,
+		UrLSafeSummary: URLSafeDigestSummary,
+		Algorithm:      algorithm,
 	}
 
 	jsonBytes, err := json.Marshal(response)

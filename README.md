@@ -6,7 +6,9 @@ POST `/digest/sign-ecc` For signing hash with ECC keys
 
 POST `/digest/verify` For verification of signed hash using public certificate
 
-GET `/digest/calculateSummary/` For digests summary calculation for one signature for use in Entrust TrustedX eIDAS Platform
+POST `/digest/calculateSummary/` For digests summary calculation for one signature for use in Entrust TrustedX eIDAS Platform
+
+POST `/digest/verificationCode` Calculates verification code by principle `integer(SHA256(hash)[-2:-1]) mod 10000`
 
 GET `/certificates` For receiving a signing and authentication certificates stored in environment variables
 
@@ -21,7 +23,7 @@ Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sig
 ## Signing 
 
 * Application decodes received base64 hash to binary format
-* Signs with RSA and ECC 
+* Signs with RSA and ECC
 * Encodes signed value to base64
 * Returns base64 signed value.
 
@@ -35,7 +37,7 @@ Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sig
 
 ## Environment
 
-```
+```yaml
     environment:
       PEM_FILE: "/run/secrets/key.pem"
       API_KEY: "Put_your_api_key_here"
@@ -56,7 +58,7 @@ secrets:
     external: true    
 ```
 
-`PEM_FILE` unencrypted RSA signing key in PEM format. 
+`PEM_FILE` unencrypted RSA signing key in PEM format.
 
 `API_KEY` Api key. Optional. If set, `API-Key` header shall be used in header.
 
@@ -68,7 +70,6 @@ secrets:
 
 `ECDSA_SIGN_CERT` base64 encoded ECDSA signing certificate. Value between the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` shall be provided.
 
-
 ### Secret creation from server terminal (SSH with root privileges)
 
 Example for creating Docker swarm secrets from file.
@@ -78,6 +79,7 @@ Log into server with ssh and administrator privileges. Copy key file to server. 
 ```sh
 docker secret create private_key /path/to/file/key.pem
 ```
+
 ### Secret creation from Portainer
 
 When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVATE KEY-----` and end with `-----END PRIVATE KEY-----` to a secret.

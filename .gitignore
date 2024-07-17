@@ -16,7 +16,6 @@
 .env
 .vscode
 pipeline.yml
-main_test.go
 test-data
 tmp/*
 tmp
