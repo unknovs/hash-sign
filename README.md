@@ -20,19 +20,19 @@ POST `/encrypt/publicKey` For data encryption (RSA PKCS1Padding) using a PKCS1 R
 
 Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sign)
 
-## Signing 
+## Signing
 
 * Application decodes received base64 hash to binary format
 * Signs with RSA and ECC
 * Encodes signed value to base64
 * Returns base64 signed value.
 
-## Verification 
+## Verification
 
-* input shall contain 
--  `digestValue` - digest before signature
--  `signatureValue` - signatureValue (signed digest)
--  `certificate` - Public certificate in base64 format
+* input shall contain
+  * `digestValue` - digest before signature
+  * `signatureValue` - signatureValue (signed digest)
+  * `certificate` - Public certificate in base64 format
 
 
 ## Environment
@@ -40,6 +40,7 @@ Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sig
 ```yaml
     environment:
       PEM_FILE: "/run/secrets/key.pem"
+      EC_PEM_FILE: "/run/secrets/ecc_key.pem"
       API_KEY: "Put_your_api_key_here"
       RSA_AUTH_CERT: "base64 encoded RSA signing certificate"
       RSA_SIGN_CERT: "base64 encoded RSA authentication certificate"
@@ -47,18 +48,24 @@ Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sig
       ECDSA_SIGN_CERT: "base64 encoded ECDSA authentication certificate"
 
     secrets:
-      - source: "private_key"
+      - source: "rsa_private_key"
         target: "key.pem"
+      - source: "ecc_private_key"
+        target: "ecc_key.pem"
     volumes:
       - temp:/tmp
 volumes:
   temp:
 secrets:
-  private_key_prod:
-    external: true    
+  rsa_private_key:
+    external: true
+  ecc_private_key:
+    external: true 
 ```
 
-`PEM_FILE` unencrypted RSA signing key in PEM format.
+`PEM_FILE` unencrypted RSA signing key in PEM format. Description below.
+
+`EC_PEM_FILE` unencrypted ECDSA signing key in PEM format. Description below.
 
 `API_KEY` Api key. Optional. If set, `API-Key` header shall be used in header.
 
@@ -82,8 +89,13 @@ docker secret create private_key /path/to/file/key.pem
 
 ### Secret creation from Portainer
 
-When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVATE KEY-----` and end with `-----END PRIVATE KEY-----` to a secret.
+#### For RSA private key
 
+When creating a secret, copy content of pem file - starts with `-----BEGIN RSA PRIVATE KEY-----` and end with `-----END RSA PRIVATE KEY-----` to a secret.
+
+#### For ECDSA private key
+
+When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVATE KEY-----` and end with `-----END PRIVATE KEY-----` to a secret.
 
 ## Methods
 
