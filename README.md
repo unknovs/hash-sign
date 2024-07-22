@@ -81,7 +81,7 @@ secrets:
 
 Example for creating Docker swarm secrets from file.
 
-Log into server with ssh and administrator privileges. Copy key file to server. Private key must be in PKCS8 unencrypted format - starts with `-----BEGIN PRIVATE KEY-----` and end with `-----END PRIVATE KEY-----`.
+Log into server with ssh and administrator privileges. Copy key file to server. For example, for RSA, Private key must be in PKCS#1 unencrypted format - starts with `-----BEGIN RSA PRIVATE KEY-----` and end with `-----END RSA PRIVATE KEY-----`.
 
 ```sh
 docker secret create private_key /path/to/file/key.pem
