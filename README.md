@@ -6,7 +6,7 @@ POST `/digest/sign-ecc` For signing hash with ECC keys
 
 POST `/digest/verify` For verification of signed hash using public certificate
 
-POST `/digest/calculateSummary/` For digests summary calculation for one signature for use in Entrust TrustedX eIDAS Platform
+POST `/digest/calculateSummary` For digests summary calculation for one signature for use in Entrust TrustedX eIDAS Platform
 
 POST `/digest/verificationCode` Calculates verification code by principle `integer(SHA256(hash)[-2:-1]) mod 10000`
 
@@ -103,7 +103,9 @@ When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVA
 
 `/digest/verify` method description [here](./documentation/verify.md)
 
-`/digest/calculateSummary/` method description [here](./documentation/calculateSummary.md)
+`/digest/calculateSummary` method description [here](./documentation/calculateSummary.md)
+
+`/digest/verificationCode` method description [here](./documentation/verificationCode.md)
 
 `/certificates` method description [here](./documentation/certificates.md)
 
