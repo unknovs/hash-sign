@@ -71,37 +71,49 @@ func SigningHandler(privateKey *rsa.PrivateKey) http.HandlerFunc {
 			return
 		}
 
-		var hashSignatureValue responses.HashSignature
+		var hashSignatureRequests []struct {
+			SessionId string `json:"sessionId"`
+			Hash      string `json:"hash"`
+		}
 
-		// Decode the incoming JSON
-		err := json.NewDecoder(r.Body).Decode(&hashSignatureValue)
+		// Decode the incoming JSON array
+		err := json.NewDecoder(r.Body).Decode(&hashSignatureRequests)
 		if err != nil {
 			log.Printf("Failed to decode JSON: %s", err)
 			http.Error(w, "Failed to decode JSON", http.StatusBadRequest)
 			return
 		}
 
-		// Sign the hash
-		hashBytes, _ := base64.StdEncoding.DecodeString(hashSignatureValue.Hash)
-		signature, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashBytes[:])
-		if err != nil {
-			log.Printf("Error signing hash: %s", err)
-			http.Error(w, "Error signing hash", http.StatusInternalServerError)
-			return
+		var hashSignatureResponses []responses.HashSignature
+
+		// Process each hash in the array
+		for _, request := range hashSignatureRequests {
+			hashBytes, _ := base64.StdEncoding.DecodeString(request.Hash)
+			signature, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashBytes[:])
+			if err != nil {
+				log.Printf("Error signing hash: %s", err)
+				http.Error(w, "Error signing hash", http.StatusInternalServerError)
+				return
+			}
+
+			hashSignatureResponse := responses.HashSignature{
+				SessionId:       request.SessionId,
+				SignatureMethod: "PKCS1v15",
+				Hash:            request.Hash,
+				SignatureValue:  base64.StdEncoding.EncodeToString(signature),
+			}
+
+			hashSignatureResponses = append(hashSignatureResponses, hashSignatureResponse)
 		}
-		hashSignatureValue.SignatureMethod = "PKCS1v15"
 
-		// Encode the signature to base64
-		signatureValue := base64.StdEncoding.EncodeToString(signature)
-		hashSignatureValue.SignatureValue = signatureValue
-		hashSignatureValue.Hash = base64.StdEncoding.EncodeToString(hashBytes)
-
-		// Log the signed hash value
-		log.Printf("Hash value: %v signed", hashSignatureValue.Hash)
+		// Log the signed hash values
+		for _, response := range hashSignatureResponses {
+			log.Printf("Hash value: %v signed", response.Hash)
+		}
 
 		// Write the JSON response
 		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(hashSignatureValue)
+		err = json.NewEncoder(w).Encode(hashSignatureResponses)
 		if err != nil {
 			log.Printf("Failed to encode JSON: %s", err)
 			http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
