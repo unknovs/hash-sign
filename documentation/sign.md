@@ -35,13 +35,31 @@ Since with ECDSA ypu can create diferent signatures, DER and P1363 signatures ar
 | `SignatureMethod` | *string* | Use `DER`  or `P1363` signing methods. if no key, `DER`  is default. |
 
 
-### **Body**
+### **Body** ECC
 
 JSON
+
 ```json
 {
     "hash": "string"
 }
+```
+
+### **Body** RSA with Batch
+
+JSON
+
+```json
+[
+    {
+        "sessionId":"string",
+        "hash": "string"
+    },
+    {
+        "sessionId":"string",
+        "hash": "string"
+    }
+]
 ```
 
 Description of properties
@@ -59,10 +77,12 @@ Description of properties
 ```
 
 ## **Response**
+
 JSON object:
 
 ```json
 {
+    "sessionId": "string", // for rsa batch
     "signatureMethod": "string",
     "hash": "string",
     "signatureValue": "string"
