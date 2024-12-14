@@ -51,6 +51,7 @@ func main() {
 	http.HandleFunc("/asice/addFile", functions.APIKeyAuthorization(functions.HandleAddFileToAsiceRequest))
 	http.HandleFunc("/encrypt/publicKey", functions.APIKeyAuthorization(functions.EncryptWithPublicKeyHandler))
 	http.HandleFunc("/digest/verificationCode", functions.APIKeyAuthorization(functions.CalculateVerificationCode))
+	http.HandleFunc("/jwt/generate", functions.APIKeyAuthorization(functions.JwtGenerateHandler))
 
 	// Add a handler for the root path
 	http.HandleFunc("/", functions.APIKeyAuthorization(func(w http.ResponseWriter, r *http.Request) {
