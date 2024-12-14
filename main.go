@@ -59,6 +59,6 @@ func main() {
 		w.Write([]byte("OK"))
 	}))
 
-	fmt.Println("Server listening on port 80...")
-	log.Fatal(http.ListenAndServe(":80", nil))
+	fmt.Println("Server listening on port 8080...")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
