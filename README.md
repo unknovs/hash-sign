@@ -77,6 +77,8 @@ secrets:
 
 `ECDSA_SIGN_CERT` base64 encoded ECDSA signing certificate. Value between the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` shall be provided.
 
+`JWT_SIGNING_KEY` PKCS8 PRIVATE KEY `FILE` in PEM format. **Including** `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----`
+
 ### Secret creation from server terminal (SSH with root privileges)
 
 Example for creating Docker swarm secrets from file.
@@ -112,6 +114,8 @@ When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVA
 `/asice/addFile` method description [here](./documentation/addFile.md)
 
 `/encrypt/publicKey` method description [here](./documentation/encrypt_with_public_key.md)
+
+`jwt/generate` method description [here](./documentation/generateJwt.md)
 
 ## Useful commands
 
