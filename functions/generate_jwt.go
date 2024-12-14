@@ -8,6 +8,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -20,19 +21,27 @@ import (
 func generateJWT(req requests.JWTRequest) (string, error) {
 
 	// Read private key from environment variable
+
 	privateKeyPEM := os.Getenv("JWT_SIGNING_KEY")
+
+	// Read the entire file content
+	keyBytes, err := os.ReadFile(privateKeyPEM)
+	if err != nil {
+		return "", fmt.Errorf("failed to read key file: %v", err)
+	}
+
+	// Decode PEM encoded private key
 	if privateKeyPEM == "" {
 		return "", fmt.Errorf("JWT_SIGNING_KEY environment variable is not set")
 	}
 
-	// Decode PEM encoded private key
-	block, _ := pem.Decode([]byte(privateKeyPEM))
+	block, rest := pem.Decode(keyBytes)
 	if block == nil {
-		return "", fmt.Errorf("failed to parse PEM block containing the key")
+		return "", fmt.Errorf("failed to parse PEM block. Decoded content: %v, Remaining content: %v", block, string(rest))
 	}
 
-	// Parse the private key
-	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	// Parse the private key (now using ParsePKCS8PrivateKey for PKCS8 format)
+	privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse private key: %v", err)
 	}
@@ -98,6 +107,8 @@ func JwtGenerateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	log.Println("JWT generation successful")
 
 	// Create response
 	response := responses.JWTResponse{Token: tokenString}
