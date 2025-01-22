@@ -16,6 +16,10 @@ POST `/asice/addFile` For adding a file to a asic-e container
 
 POST `/encrypt/publicKey` For data encryption (RSA PKCS1Padding) using a PKCS1 RSA public key in PEM format.
 
+POST `/digest/verificationCode` 4 digit verification code generation from hash to be signed.
+
+POST `/jwt/generate` JWT token generation and signing with specific data
+
 ## Image
 
 Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sign)
@@ -46,12 +50,15 @@ Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sig
       RSA_SIGN_CERT: "base64 encoded RSA authentication certificate"
       ECDSA_AUTH_CERT: "base64 encoded ECDSA signing certificate"
       ECDSA_SIGN_CERT: "base64 encoded ECDSA authentication certificate"
+      JWT_SIGNING_KEY: "jwt signing private key"
 
     secrets:
       - source: "rsa_private_key"
         target: "key.pem"
       - source: "ecc_private_key"
         target: "ecc_key.pem"
+      - source: "jwt_signing_key"
+        target: "jwt_signing_key"
     volumes:
       - temp:/tmp
 volumes:
@@ -61,6 +68,8 @@ secrets:
     external: true
   ecc_private_key:
     external: true 
+  jwt_signing_key:
+    external: true
 ```
 
 `PEM_FILE` unencrypted RSA signing key in PEM format. Description below.
@@ -115,7 +124,7 @@ When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVA
 
 `/encrypt/publicKey` method description [here](./documentation/encrypt_with_public_key.md)
 
-`jwt/generate` method description [here](./documentation/generateJwt.md)
+`/jwt/generate` method description [here](./documentation/generateJwt.md)
 
 ## Useful commands
 
