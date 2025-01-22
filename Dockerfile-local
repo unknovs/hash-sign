@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine AS build
+FROM golang:1.23-alpine AS build
 
 WORKDIR /app
 
@@ -21,6 +21,6 @@ RUN    mkdir -p publish/etc/ssl/certs/ && \
 FROM scratch
 WORKDIR /
 COPY --from=build app/publish/ ./
-EXPOSE 80/tcp
+EXPOSE 8800/tcp
 ENV TZ=Europe/Riga
 ENTRYPOINT ["/server", "main"]
