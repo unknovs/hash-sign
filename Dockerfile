@@ -1,7 +1,7 @@
 FROM scratch
 
 WORKDIR /
-EXPOSE 80/tcp
+EXPOSE 8080/tcp
 COPY publish/ ./
 
 ENV TZ=Europe/Riga

@@ -21,6 +21,6 @@ RUN    mkdir -p publish/etc/ssl/certs/ && \
 FROM scratch
 WORKDIR /
 COPY --from=build app/publish/ ./
-EXPOSE 8800/tcp
+EXPOSE 8080/tcp
 ENV TZ=Europe/Riga
 ENTRYPOINT ["/server", "main"]
