@@ -16,13 +16,7 @@ header 'API-Key: Strong_example'
 
 ## **Request**
 
-The Service provider's application sends the following request using TLS for RSA keys:
-
-```bash
-POST /digest/sign
-```
-
-uzsing ECDSA key:
+The Service provider's application sends the following request using TLS:
 
 ```bash
 POST /digest/verificationCode
