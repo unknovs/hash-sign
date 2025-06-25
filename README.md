@@ -109,24 +109,24 @@ When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVA
 
 ## Methods
 
-`/digest/sign` and `/digest/sign-ecc` method description [here](./documentation/sign.md)
+`/digest/sign` and `/digest/sign-ecc` method [description here](./documentation/sign.md)
 
-`/digest/verify` method description [here](./documentation/verify.md)
+`/digest/verify` method [description here](./documentation/verify.md)
 
-`/digest/calculateSummary` method description [here](./documentation/calculateSummary.md)
+`/digest/calculateSummary` method [description here](./documentation/calculateSummary.md)
 
-`/digest/verificationCode` method description [here](./documentation/verificationCode.md)
+`/digest/verificationCode` method [description here](./documentation/verificationCode.md)
 
-`/certificates` method description [here](./documentation/certificates.md)
+`/certificates` method [description here](./documentation/certificates.md)
 
-`/asice/addFile` method description [here](./documentation/addFile.md)
+`/asice/addFile` method [description here](./documentation/addFile.md)
 
-`/encrypt/publicKey` method description [here](./documentation/encrypt_with_public_key.md)
+`/encrypt/publicKey` method [description here](./documentation/encrypt_with_public_key.md)
 
-`/digest/verificationCode` method description [here](./documentation/verificationCode.md)
+`/digest/verificationCode` method [description here](./documentation/verificationCode.md)
 
-`/jwt/generate` method description [here](./documentation/generateJwt.md)
+`/jwt/generate` method [description here](./documentation/generateJwt.md)
 
 ## Useful commands
 
-You can find some useful commands for preparing key [here](./documentation/helper.md)
+You can find some useful [commands for preparing key here](./documentation/helper.md)
