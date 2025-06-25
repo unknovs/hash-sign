@@ -1,22 +1,22 @@
 # Calculate digest summary
 
-## **Scope**
+## Scope
 
 Method for digest summary calculation for one signature for use in Entrust TrustedX eIDAS Platform to get digest signed
 
-## **Authorization**
+## Authorization
 
 If "API_KEY" variable is set in environment, `API-Key` header shall be used in header
 
-```
+```sh
 header 'API-Key: Strong_example'
 ```
 
-## **Request**
+## Request
 
 The Service provider's application sends the following request using TLS:
 
-```
+```sh
 POST /digest/calculateSummary
 ```
 
@@ -33,13 +33,14 @@ Possible keys (Optional), if no keys defined, all registrated certifikates will 
 ### Body
 
 JSON
+
 ```json
 {
     "digest": "string"
 }
 ```
 
-### **Example**
+### Example
 
 without using a key:
 
@@ -61,8 +62,7 @@ body
 }
 ```
 
-
-## **Response**
+## Response
 
 JSON object:
 
@@ -82,8 +82,7 @@ Description of properties
 | `URLSafeDigestSummary` | *string* | calculated digest summary value in URL safe base64 format for use in Entrust TrustedX eIDAS Platform |
 | `algorithm` | *string* | algorithm used to calculate digest summary value in base64 format |
 
-
-### **Example** 
+### Response example
 
 ```json
 {
