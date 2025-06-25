@@ -124,6 +124,8 @@ When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVA
 
 `/encrypt/publicKey` method description [here](./documentation/encrypt_with_public_key.md)
 
+`/digest/verificationCode` method description [here](./documentation/verificationCode.md)
+
 `/jwt/generate` method description [here](./documentation/generateJwt.md)
 
 ## Useful commands
