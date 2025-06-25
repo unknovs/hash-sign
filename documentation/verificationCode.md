@@ -62,7 +62,7 @@ Description of properties
 | --- | --- | --- |
 | `verification_code`  | *number* | 4 digit number |
 
-### **Example** 
+### **Response example**
 
 ```json
 {

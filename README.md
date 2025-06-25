@@ -38,7 +38,6 @@ Latest image available on [docker hub](https://hub.docker.com/r/unknovs/hash-sig
   * `signatureValue` - signatureValue (signed digest)
   * `certificate` - Public certificate in base64 format
 
-
 ## Environment
 
 ```yaml
@@ -78,7 +77,7 @@ secrets:
 
 `API_KEY` Api key. Optional. If set, `API-Key` header shall be used in header.
 
-`RSA_AUTH_CERT` base64 encoded RSA authentication certificate. Value between the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` shall be provided. 
+`RSA_AUTH_CERT` base64 encoded RSA authentication certificate. Value between the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` shall be provided.
 
 `RSA_SIGN_CERT` base64 encoded RSA signing certificate. Value between the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` shall be provided.
 
