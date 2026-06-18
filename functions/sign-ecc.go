@@ -24,6 +24,8 @@ package functions
 
 import (
 	"crypto/ecdsa"
+	"encoding/base64"
+	"fmt"
 	"net/http"
 
 	"github.com/unknovs/hash-sign/routes/requests"
@@ -61,4 +63,35 @@ func SigningHandlerEC(privateKey *ecdsa.PrivateKey) http.HandlerFunc {
 
 		sendResponse(w, signEcdsa, signature, signatureMethod)
 	}
+}
+
+// SignECCDigest signs a base64-encoded digest with the ECC private key and returns
+// the base64 signature in the requested method ("DER" default, or "P1363"). It
+// reuses the same signHash + encodeSignature primitives as /digest/sign-ecc, so
+// the CSC mock (functions/csc.go) produces identical signatures; the
+// SigningHandlerEC handler above is intentionally left untouched.
+func SignECCDigest(privateKey *ecdsa.PrivateKey, digestBase64, signatureMethod string) (string, error) {
+	if privateKey == nil {
+		return "", fmt.Errorf("ECC private key not loaded")
+	}
+	if signatureMethod == "" {
+		signatureMethod = "DER"
+	}
+
+	hashBytes, err := base64.StdEncoding.DecodeString(digestBase64)
+	if err != nil {
+		return "", fmt.Errorf("failed to decode digest from base64: %w", err)
+	}
+
+	signatureR, signatureS, err := signHash(privateKey, hashBytes)
+	if err != nil {
+		return "", err
+	}
+
+	signature, err := encodeSignature(signatureMethod, signatureR, signatureS, privateKey)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(signature), nil
 }

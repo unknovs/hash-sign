@@ -75,6 +75,18 @@ func main() {
 	http.HandleFunc("/digest/verificationCode", functions.APIKeyAuthorization(functions.CalculateVerificationCode))
 	http.HandleFunc("/jwt/generate", functions.APIKeyAuthorization(functions.JwtGenerateHandler))
 
+	// CSC API v2 mock (opt-in: CSC_MOCK_ENABLED). NOT wrapped by APIKeyAuthorization —
+	// the CSC client authenticates with its own OAuth bearer/Basic, not API-Key.
+	if env.CscMockEnabled {
+		http.HandleFunc("/csc/v2/info", functions.CscInfoHandler)
+		http.HandleFunc("/csc/v2/oauth2/authorize", functions.CscAuthorizeHandler)
+		http.HandleFunc("/csc/v2/oauth2/token", functions.CscTokenHandler)
+		http.HandleFunc("/csc/v2/credentials/list", functions.CscCredentialsListHandler)
+		http.HandleFunc("/csc/v2/credentials/info", functions.CscCredentialsInfoHandler)
+		http.HandleFunc("/csc/v2/signatures/signHash", functions.CscSignHashHandler(privateKeyEC))
+		log.Println("CSC mock enabled (CSC_MOCK_ENABLED): /csc/v2/{info,oauth2/authorize,oauth2/token,credentials/list,credentials/info,signatures/signHash}")
+	}
+
 	// Add a handler for the root path
 	http.HandleFunc("/", functions.APIKeyAuthorization(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

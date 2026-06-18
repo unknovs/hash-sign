@@ -37,7 +37,20 @@ var (
 	EcdsaAuthCert    = os.Getenv("ECDSA_AUTH_CERT")
 	EcdsaSigningCert = os.Getenv("ECDSA_SIGN_CERT")
 	jwtSigningKey    = os.Getenv("JWT_SIGNING_KEY")
+
+	// CSC mock — opt-in test surface (see functions/csc.go); off unless CSC_MOCK_ENABLED=true.
+	CscMockEnabled     = strings.EqualFold(os.Getenv("CSC_MOCK_ENABLED"), "true")
+	CscMockSigEncoding = cscMockSigEncoding()
 )
+
+// cscMockSigEncoding selects the ECDSA signature encoding the CSC mock's signHash
+// returns: "DER" (default) or "P1363".
+func cscMockSigEncoding() string {
+	if v := os.Getenv("CSC_MOCK_SIG_ENCODING"); v != "" {
+		return v
+	}
+	return "DER"
+}
 
 // getEnvOrSecret reads the environment variable or Docker secret file content.
 func getEnvOrSecret(varName string) string {

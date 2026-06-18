@@ -127,6 +127,35 @@ When creating a secret, copy content of pem file - starts with `-----BEGIN PRIVA
 
 `/jwt/generate` method [description here](./documentation/generateJwt.md)
 
+## CSC API mock (opt-in)
+
+A minimal but **CSC API v2-faithful** test server — **off by default**, enabled with
+`CSC_MOCK_ENABLED=true`. It implements the request/response shapes of the CSC methods a
+remote-signing client uses, so any CSC client can drive it; `signHash` is backed by the
+ECC key and `credentials/info` by `ECDSA_SIGN_CERT`.
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `POST` | [`/csc/v2/info`](./documentation/csc/info.md) | service discovery (mandatory CSC method) |
+| `GET`  | [`/csc/v2/oauth2/authorize`](./documentation/csc/authorize.md) | auto-approves → `302 redirect_uri?code&state` |
+| `POST` | [`/csc/v2/oauth2/token`](./documentation/csc/token.md) | opaque bearer token |
+| `POST` | [`/csc/v2/credentials/list`](./documentation/csc/credentialsList.md) | one synthetic credential id |
+| `POST` | [`/csc/v2/credentials/info`](./documentation/csc/credentialsInfo.md) | cert + details from `ECDSA_SIGN_CERT` (subject, validity, qcStatements, key) |
+| `POST` | [`/csc/v2/signatures/signHash`](./documentation/csc/signHash.md) | signs each digest with the ECC key |
+
+Per-method request/response details: **[documentation/csc/](./documentation/csc/README.md)**.
+
+`signHash` reads `hashes` (CSC v2) and also accepts `hash` (alias); errors use the CSC
+`{ "error", "error_description" }` body. Authentication is not enforced —
+`oauth2/authorize` auto-approves and any bearer is accepted — so the routes are **not**
+behind `API-Key`. It is a test mock: it performs the raw `signHash` and serves the
+credential certificate, but does no AdES packaging or timestamping (that is the calling
+application's job).
+
+`CSC_MOCK_ENABLED` — set `true` to expose `/csc/v2/*` (default off).
+
+`CSC_MOCK_SIG_ENCODING` — `DER` (default) or `P1363`; the ECDSA encoding `signHash` returns.
+
 ## Useful commands
 
 You can find some useful [commands for preparing key here](./documentation/helper.md)
